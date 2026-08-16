@@ -1,0 +1,12 @@
+{
+  "name": "social-friends",
+  "version": "1.0.0",
+  "description": "Red social para conocer gente nueva",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
