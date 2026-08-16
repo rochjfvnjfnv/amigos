@@ -2,76 +2,134 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Amigos — Red Social</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Amigos — Conoce gente nueva</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="authScreen" class="screen">
-    <div class="card">
-      <h1 class="logo">Amigos</h1>
-      <p class="tagline">Conoce gente nueva cerca de ti</p>
 
-      <div id="loginForm">
-        <input id="liEmail" type="email" placeholder="Correo electrónico" required>
-        <input id="liPass" type="password" placeholder="Contraseña" required>
-        <button onclick="login()">Iniciar sesión</button>
-        <p class="switch">¿No tienes cuenta? <a href="#" onclick="showRegister()">Regístrate</a></p>
+  <!-- ============ PANTALLA DE INICIO / REGISTRO ============ -->
+  <div id="authScreen" class="screen">
+    <div class="auth-bg">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-brand">
+        <img src="logo.svg" alt="Amigos" class="brand-logo">
+        <h1 class="wordmark">Amigos</h1>
+        <p class="tagline">Conoce gente nueva. Haz amigos reales.</p>
       </div>
 
-      <div id="registerForm" style="display:none">
-        <input id="rgName" type="text" placeholder="Nombre" required>
-        <input id="rgEmail" type="email" placeholder="Correo electrónico" required>
-        <input id="rgPass" type="password" placeholder="Contraseña" required>
-        <input id="rgAge" type="number" placeholder="Edad" min="13" max="120" required>
-        <input id="rgHobby" type="text" placeholder="Pasatiempo / interés">
-        <textarea id="rgBio" rows="2" placeholder="Cuéntanos sobre ti (opcional)"></textarea>
-        <button onclick="register()">Crear cuenta</button>
-        <p class="switch">¿Ya tienes cuenta? <a href="#" onclick="showLogin()">Inicia sesión</a></p>
+      <div id="loginForm" class="form">
+        <div class="field">
+          <svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm0 2v.3l8 6 8-6V7H4zm0 2.8V18h16V9.8l-8 6-8-6z"/></svg>
+          <input id="liEmail" type="email" placeholder="Correo electrónico" autocomplete="email">
+        </div>
+        <div class="field">
+          <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1V7a5 5 0 0 1 5-5zm3 8V7a3 3 0 0 0-6 0v3h6z"/></svg>
+          <input id="liPass" type="password" placeholder="Contraseña" autocomplete="current-password">
+        </div>
+        <button class="btn-grad" onclick="login()">Iniciar sesión</button>
+        <p class="switch">¿No tienes cuenta? <a href="#" onclick="showRegister();return false;">Créate una</a></p>
+      </div>
+
+      <div id="registerForm" class="form" style="display:none">
+        <div class="field">
+          <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z"/></svg>
+          <input id="rgName" type="text" placeholder="Tu nombre" autocomplete="name">
+        </div>
+        <div class="field">
+          <svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm0 2v.3l8 6 8-6V7H4zm0 2.8V18h16V9.8l-8 6-8-6z"/></svg>
+          <input id="rgEmail" type="email" placeholder="Correo electrónico" autocomplete="email">
+        </div>
+        <div class="field">
+          <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1V7a5 5 0 0 1 5-5zm3 8V7a3 3 0 0 0-6 0v3h6z"/></svg>
+          <input id="rgPass" type="password" placeholder="Contraseña (mín. 4 caracteres)" autocomplete="new-password">
+        </div>
+        <div class="field">
+          <svg viewBox="0 0 24 24"><path d="M13 2v5a1 1 0 0 0 1 1h5l-6-6zm-1.4 1.4L17.6 9H12a1 1 0 0 1-1-1V3.4a1 1 0 0 1 1.6 0zM5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2zm7 2v3h2v-3h-2zm-3 4a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm9-2a2 2 0 1 0 4 0 2 2 0 0 0-4 0z" transform="translate(0 1)"/></svg>
+          <input id="rgAge" type="number" placeholder="Edad" min="13" max="120">
+        </div>
+        <div class="field">
+          <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 1 10 10c0 4-2.5 7.5-6.5 8.5a2.5 2.5 0 0 1-2-2.3 4 4 0 1 0-5-3.8 3.5 3.5 0 0 0 3 3.3v.5c0 1.2-.8 2.3-2 2.6C4 20.4 2 16.6 2 12A10 10 0 0 1 12 2zM7 11a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
+          <input id="rgHobby" type="text" placeholder="Pasatiempo o interés (ej. música)">
+        </div>
+        <textarea id="rgBio" rows="3" placeholder="Cuéntanos sobre ti (opcional)"></textarea>
+        <button class="btn-grad" onclick="register()">Crear mi cuenta</button>
+        <p class="switch">¿Ya tienes cuenta? <a href="#" onclick="showLogin();return false;">Inicia sesión</a></p>
       </div>
 
       <p id="authError" class="error"></p>
     </div>
   </div>
 
+  <!-- ============ APP ============ -->
   <div id="appScreen" class="screen" style="display:none">
-    <header>
-      <div class="header-inner">
-        <h1 class="logo">Amigos</h1>
-        <div class="me">
+    <header class="app-header">
+      <div class="brand">
+        <img src="logo.svg" alt="Amigos">
+        <span class="wordmark-sm">Amigos</span>
+      </div>
+      <div class="me">
+        <div class="me-badge">
           <span id="meAvatar" class="avatar"></span>
           <span id="meName"></span>
-          <button id="logoutBtn" onclick="logout()">Salir</button>
         </div>
+        <button id="logoutBtn" class="icon-btn" onclick="logout()" title="Cerrar sesión">
+          <svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5v3H3v4h7v3zm8-13H8v3h8v10H8v3h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/></svg>
+        </button>
       </div>
-      <nav>
-        <button class="tab active" data-tab="discover">Descubrir</button>
-        <button class="tab" data-tab="friends">Amigos</button>
-        <button class="tab" data-tab="chat">Chat</button>
-      </nav>
     </header>
 
-    <main>
+    <nav class="tabbar">
+      <button class="tab active" data-tab="discover">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm3.6 6.4l-2.2 5.2-5.2 2.2 2.2-5.2 5.2-2.2zM13.5 12a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0z"/></svg>
+        <span>Descubrir</span>
+      </button>
+      <button class="tab" data-tab="friends">
+        <svg viewBox="0 0 24 24"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm7 2a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-7 2c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6zm8 1c1.5 0 4 1 4 4v1h4v-2c0-3-3-4.5-6-4.8-1 .8-1.8 1.2-2 1.8z"/></svg>
+        <span>Amigos</span>
+      </button>
+      <button class="tab" data-tab="chat">
+        <svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.6 1.4 5 3.7 6.6-.2 1.3-.9 2.4-2 3.4 1.5-.2 2.9-.8 4-1.5 1.3.5 2.8.8 4.3.8 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>
+        <span>Chat</span>
+      </button>
+    </nav>
+
+    <main class="app-main">
       <section id="discover" class="view">
-        <h2>Personas para conocer</h2>
+        <h2 class="section-title">Personas para conocer</h2>
         <div id="peopleList" class="grid"></div>
       </section>
 
       <section id="friends" class="view" style="display:none">
-        <h2>Tus amigos</h2>
+        <h2 class="section-title">Tus amigos</h2>
         <div id="friendsList" class="grid"></div>
       </section>
 
       <section id="chat" class="view" style="display:none">
-        <h2>Chat con tus amigos</h2>
-        <div id="chatFriends" class="chats"></div>
-        <div id="chatWindow" class="chat-window" style="display:none">
-          <div id="chatHeader" class="chat-header"></div>
-          <div id="chatMessages" class="chat-messages"></div>
-          <form id="chatForm" class="chat-form">
-            <input id="chatInput" type="text" placeholder="Escribe un mensaje..." autocomplete="off">
-            <button type="submit">Enviar</button>
-          </form>
+        <h2 class="section-title">Tus conversaciones</h2>
+        <div class="chat-layout">
+          <div id="chatFriends" class="chats"></div>
+          <div id="chatWindow" class="chat-window" style="display:none">
+            <div id="chatHeader" class="chat-header">
+              <div class="chat-header-info"></div>
+            </div>
+            <div id="chatMessages" class="chat-messages"></div>
+            <form id="chatForm" class="chat-form">
+              <input id="chatInput" type="text" placeholder="Escribe un mensaje..." autocomplete="off">
+              <button type="submit">
+                <svg viewBox="0 0 24 24"><path d="M3.4 20.4l17.6-8.4-17.6-8.4L3 9l12 3-12 3 1.4 5.4z"/></svg>
+              </button>
+            </form>
+          </div>
         </div>
       </section>
     </main>

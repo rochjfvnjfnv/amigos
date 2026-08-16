@@ -15,12 +15,12 @@ async function api(url, opts = {}) {
 
 function showRegister() {
   document.getElementById('loginForm').style.display = 'none';
-  document.getElementById('registerForm').style.display = 'block';
+  document.getElementById('registerForm').style.display = 'flex';
   document.getElementById('authError').textContent = '';
 }
 function showLogin() {
   document.getElementById('registerForm').style.display = 'none';
-  document.getElementById('loginForm').style.display = 'block';
+  document.getElementById('loginForm').style.display = 'flex';
   document.getElementById('authError').textContent = '';
 }
 
@@ -32,6 +32,9 @@ async function register() {
   const hobby = document.getElementById('rgHobby').value;
   const bio = document.getElementById('rgBio').value;
   const err = document.getElementById('authError');
+  err.textContent = '';
+  if (!name || !email || !password || !age) { err.textContent = 'Completa nombre, correo, contraseña y edad.'; return; }
+  if (password.length < 4) { err.textContent = 'La contraseña debe tener al menos 4 caracteres.'; return; }
   try {
     const data = await api('/api/register', {
       method: 'POST', body: JSON.stringify({ name, email, password, age, hobby, bio })
@@ -47,6 +50,8 @@ async function login() {
   const email = document.getElementById('liEmail').value;
   const password = document.getElementById('liPass').value;
   const err = document.getElementById('authError');
+  err.textContent = '';
+  if (!email || !password) { err.textContent = 'Escribe tu correo y contraseña.'; return; }
   try {
     const data = await api('/api/login', {
       method: 'POST', body: JSON.stringify({ email, password })
@@ -63,20 +68,12 @@ function logout() {
   location.reload();
 }
 
-function avatarEl(user, size) {
-  const a = document.createElement('span');
-  a.className = 'avatar';
-  a.style.background = user.color;
-  a.textContent = user.name.charAt(0).toUpperCase();
-  return a;
-}
-
 function enterApp() {
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('appScreen').style.display = 'block';
-  const meAvatar = document.getElementById('meAvatar');
-  meAvatar.style.background = me.color;
-  meAvatar.textContent = me.name.charAt(0).toUpperCase();
+  const av = document.getElementById('meAvatar');
+  av.style.background = me.color;
+  av.textContent = me.name.charAt(0).toUpperCase();
   document.getElementById('meName').textContent = me.name;
   loadPeople();
   loadFriends();
@@ -87,7 +84,7 @@ function enterApp() {
 }
 
 function switchTab(e) {
-  const tab = e.target.dataset.tab;
+  const tab = e.target.closest('.tab').dataset.tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   document.querySelectorAll('.view').forEach(v => (v.style.display = v.id === tab ? 'block' : 'none'));
   if (tab === 'discover') loadPeople();
@@ -95,46 +92,56 @@ function switchTab(e) {
   if (tab === 'chat') loadChatList();
 }
 
+function emptyState(emoji, text) {
+  return `<p class="empty-state"><span class="emoji">${emoji}</span>${text}</p>`;
+}
+
+function personCard(u, action) {
+  const el = document.createElement('div');
+  el.className = 'person';
+  el.innerHTML = `
+    <div class="p-top">
+      <span class="p-person-avatar" style="background:${u.color}">${u.name.charAt(0).toUpperCase()}
+        <span class="p-status ${u.online ? 'on' : 'off'}"></span>
+      </span>
+      <div>
+        <div class="p-name">${u.name}</div>
+        <span class="p-age">${u.age} años</span>
+      </div>
+    </div>
+    ${u.hobby ? `<span class="p-hobby">${u.hobby}</span>` : ''}
+    ${u.bio ? `<p class="p-bio">${u.bio}</p>` : ''}
+  `;
+  el.appendChild(action(u));
+  return el;
+}
+
 async function loadPeople() {
   try {
     const users = await api('/api/users');
     const list = document.getElementById('peopleList');
     if (!users.length) {
-      list.innerHTML = '<p class="empty-state">Todavía no hay más personas. ¡Comparte el enlace con alguien!</p>';
+      list.innerHTML = emptyState('🌍', 'Todavía no hay más personas. ¡Comparte el enlace de la app con alguien!');
       return;
     }
     list.innerHTML = '';
     users.forEach(u => {
-      const el = document.createElement('div');
-      el.className = 'person';
-      el.innerHTML = `
-        <div class="top">
-          <span class="avatar" style="background:${u.color}">${u.name.charAt(0).toUpperCase()}</span>
-          <div>
-            <div class="name">${u.name} ${u.online ? '<span class="dot" title="En línea"></span>' : ''}</div>
-            <div class="age">${u.age} años</div>
-          </div>
-        </div>
-        ${u.hobby ? `<span class="hobby">${u.hobby}</span>` : ''}
-        ${u.bio ? `<div class="bio">${u.bio}</div>` : ''}
-      `;
       const btn = document.createElement('button');
-      btn.className = 'btn-sm ' + (u.isFriend ? 'btn-ghost' : '');
-      btn.textContent = u.isFriend ? 'Agregado' : '+ Agregar amigo';
-      if (u.isFriend) {
-        btn.onclick = async () => {
-          await api('/api/friends/' + u.id, { method: 'DELETE' });
-          loadPeople();
-        };
-      } else {
-        btn.onclick = async () => {
-          await api('/api/friends', { method: 'POST', body: JSON.stringify({ friendId: u.id }) });
+      btn.className = 'p-btn ' + (u.isFriend ? 'done' : 'add');
+      btn.textContent = u.isFriend ? '✓ Agregado' : '+ Conocer';
+      btn.onclick = async () => {
+        try {
+          if (u.isFriend) {
+            await api('/api/friends/' + u.id, { method: 'DELETE' });
+          } else {
+            await api('/api/friends', { method: 'POST', body: JSON.stringify({ friendId: u.id }) });
+          }
           loadPeople();
           loadFriends();
-        };
-      }
-      el.appendChild(btn);
-      list.appendChild(el);
+          loadChatList();
+        } catch (e) { alert(e.message); }
+      };
+      list.appendChild(personCard(u, () => btn));
     });
   } catch (e) { console.error(e); }
 }
@@ -145,34 +152,23 @@ async function loadFriends() {
     const friends = users.filter(u => u.isFriend);
     const list = document.getElementById('friendsList');
     if (!friends.length) {
-      list.innerHTML = '<p class="empty-state">Aún no tienes amigos. Ve a "Descubrir" y agrega a alguien.</p>';
+      list.innerHTML = emptyState('🤝', 'Aún no tienes amigos. Ve a "Descubrir" y conoce a alguien.');
       return;
     }
     list.innerHTML = '';
     friends.forEach(u => {
-      const el = document.createElement('div');
-      el.className = 'person';
-      el.innerHTML = `
-        <div class="top">
-          <span class="avatar" style="background:${u.color}">${u.name.charAt(0).toUpperCase()}</span>
-          <div>
-            <div class="name">${u.name} ${u.online ? '<span class="dot" title="En línea"></span>' : ''}</div>
-            <div class="age">${u.age} años</div>
-          </div>
-        </div>
-        ${u.hobby ? `<span class="hobby">${u.hobby}</span>` : ''}
-      `;
       const btn = document.createElement('button');
-      btn.className = 'btn-sm btn-ghost';
+      btn.className = 'p-btn remove';
       btn.textContent = 'Eliminar';
       btn.onclick = async () => {
-        await api('/api/friends/' + u.id, { method: 'DELETE' });
-        loadFriends();
-        loadPeople();
-        loadChatList();
+        try {
+          await api('/api/friends/' + u.id, { method: 'DELETE' });
+          loadFriends();
+          loadPeople();
+          loadChatList();
+        } catch (e) { alert(e.message); }
       };
-      el.appendChild(btn);
-      list.appendChild(el);
+      list.appendChild(personCard(u, () => btn));
     });
   } catch (e) { console.error(e); }
 }
@@ -184,7 +180,7 @@ async function loadChatList() {
     const list = document.getElementById('chatFriends');
     const win = document.getElementById('chatWindow');
     if (!friends.length) {
-      list.innerHTML = '<p class="empty-state">Agrega amigos para poder chatear.</p>';
+      list.innerHTML = emptyState('💬', 'Agrega amigos para poder chatear con ellos.');
       win.style.display = 'none';
       currentChat = null;
       return;
@@ -193,20 +189,30 @@ async function loadChatList() {
     friends.forEach(u => {
       const el = document.createElement('div');
       el.className = 'chat-row' + (currentChat === u.id ? ' active' : '');
-      el.appendChild(avatarEl(u));
-      const name = document.createElement('div');
-      name.textContent = u.name + (u.online ? ' (en línea)' : '');
-      el.appendChild(name);
+      el.innerHTML = `
+        <span class="avatar" style="background:${u.color}">${u.name.charAt(0).toUpperCase()}</span>
+        <div>
+          <div class="chat-name">${u.name}</div>
+          <div class="chat-status"><span class="dot ${u.online ? '' : 'off'}"></span>${u.online ? 'En línea' : 'Desconectado'}</div>
+        </div>
+      `;
       el.onclick = () => openChat(u.id, u.name, u.color);
       list.appendChild(el);
     });
+    if (currentChat) {
+      const activeFriend = friends.find(f => f.id === currentChat);
+      if (!activeFriend) { currentChat = null; win.style.display = 'none'; }
+    }
   } catch (e) { console.error(e); }
 }
 
 async function openChat(friendId, friendName, color) {
   currentChat = friendId;
-  document.getElementById('chatHeader').textContent = 'Chat con ' + friendName;
-  document.getElementById('chatWindow').style.display = 'block';
+  document.getElementById('chatHeader').innerHTML = `
+    <span class="avatar" style="background:${color}">${friendName.charAt(0).toUpperCase()}</span>
+    ${friendName}
+  `;
+  document.getElementById('chatWindow').style.display = 'flex';
   document.querySelectorAll('.chat-row').forEach(r => r.classList.remove('active'));
   await loadChatList();
   await loadMessages(friendId);
